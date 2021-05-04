@@ -1,9 +1,12 @@
-import os
-import re
-import sys
-import bcrypt
+# Jerry A - CS492 Final Project - 05/04/2021
+
+import os  # Imported the os for file access/manipulation
+import re  # Regex functionality for limiting characters
+import sys  # Used for sys.exit() for debugging
+import bcrypt  # Hashing and salting
 
 
+# Searching through an array to return the position passed
 def index_2d(data, search):
     for i, e in enumerate(data):
         try:
@@ -13,6 +16,7 @@ def index_2d(data, search):
     raise ValueError("{} is not in list".format(repr(search)))
 
 
+# User Group made of of: Username, Password, and Clearance Level
 users = [["YaredSurendra", b"E6khLjYn", '0'],
          ["MelleBamidele", b"eukvx9QB", '0'],
          ["NairyosHeroides", b"uyvXENvV", '0'],
@@ -29,25 +33,24 @@ users = [["YaredSurendra", b"E6khLjYn", '0'],
          ["MenelaosDaidalos", b"zYe625Sc", '2'],
          ["ApollonNotosfos", b"vdxhVKpc", '2']
          ]
-
+# Make copy of users where passwords are hashed and salted
 users_hashed_salted = []
 for row in users:
     form = []
     hashed = bcrypt.hashpw(row[1], bcrypt.gensalt())
     form = [row[0], hashed, row[2]]
-    print("In Form: \t", end='')
-    print(form)
     users_hashed_salted.append(form)
-    print(users_hashed_salted)
 
 
-class Class:
+# Creating object of User made up of a username, password, and permission level (Clearance)
+class User:
     def __init__(self, username, password, perm_level):
         self.perm_level = perm_level
         self.username = username
         self.password = password
 
 
+# Declaring and initialization of compartments being Unclassified, Classified, and Top Secret
 def compartment_level(arg):
     compartments = {
         0: "Unclassified",
@@ -57,8 +60,8 @@ def compartment_level(arg):
     return compartments.get(int(arg))
 
 
+# Authorizing read and write permission based off the BLP and Biba Model
 def files(subject_level, setting):
-    # ['classified.txt', 'topsecret.txt', 'unclassified.txt']
     entries_read = os.listdir('files/')
     entries_write = os.listdir('files/')
     entries = os.listdir('files/')
@@ -91,12 +94,26 @@ def files(subject_level, setting):
     return file_array
 
 
+# BLP model, expecting an argument and calling files passing clearance level and model. Returning array of entries
 def blp(lvl):
     return files(lvl, 0)
 
 
+# BIBA model, expecting an argument and calling files passing clearance level and model. Return array of entries
 def biba(lvl):
     return files(lvl, 1)
+
+
+"""
+    Starts by requiring a username and password for authentication. 
+        (i.e U: SaburouTakumi P: h3wZd9SR)
+    Requirements through main such as: Character Limit, Key limit
+    Username is validated through comparing the username given in stdin with name in 'database'
+    Func index_2d is utilized to get the position of an name:pass:level group. Objective, User, is created
+    The instructions were vague with introducing a BLP or Biba model so I give the 'Users' options of what model
+        to follow
+    Given a 'Users' level, the 'User' is prompted with what files (stored locally) are available to read and write
+"""
 
 
 def main():
@@ -114,7 +131,7 @@ def main():
             position = index_2d(users_hashed_salted, username)
             if bcrypt.checkpw(password.encode('utf8'), users_hashed_salted[position[0]][1]):
                 level = username_validation[0][2]
-                session_user = Class(username, password, level)
+                session_user = User(username, password, level)
                 break
             else:
                 print("Wrong Password")
