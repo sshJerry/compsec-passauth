@@ -1,84 +1,31 @@
-from cryptography.fernet import Fernet, MultiFernet
 import os
-import base64
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
-from cryptography.hazmat.backends import default_backend
-import re, sys
+import re
+import sys
+import bcrypt
 
-"""
-unclass passes:     E6khLjYn eukvx9QB uyvXENvV v2NdeP3V dd3JBAqs
-class passes:       Fh7kZLEy 5Zh4FdeR 7jfMgUcx h3wZd9SR rVkfk8gA
-topsecre passes:    kNrCvWh6 bbNM5pkQ mb4X2dkd zYe625Sc vdxhVKpc
-"""
-
-# Create Groups i.e TOPSECRET{CS492}, CLASSIFIED{CS492,CS1})
-# BLP or BIBA Option (IN CS 492 Lec017 Authorization II - ACLCapabilities S19.pdf LECTURE)
-# THEN salt and hash passwords after functionality
-unclassifiedUsers = [
-    ['YaredSurendra', 'E6khLjYn', '0'],
-    ['MelleBamidele', 'eukvx9QB', '0'],
-    ['NairyosHeroides', 'uyvXENvV', '0'],
-    ['AjayYiftachang', 'v2NdeP3V', '0'],
-    ['FlaviusAlaattin', 'dd3JBAqs', '0']
-]
-classifiedUsers = [
-    ['YaredAvrumlos', 'Fh7kZLEy', '1'],
-    ['DubhghallAtalyah', '5Zh4FdeR', '1'],
-    ['NoriKenzolosa', '7jfMgUcx', '1'],
-    ['SaburouTakumi', 'h3wZd9SR', '1'],
-    ['YoshirouTooru', 'rVkfk8gA', '1']
-]
-topSecretUsers = [
-    ['ChrysesKastor', 'kNrCvWh6', '2'],
-    ['HyakinthosErebos', 'bbNM5pkQ', '2'],
-    ['ErosIapetoslos', 'mb4X2dkd', '2'],
-    ['MenelaosDaidalos', 'zYe625Sc', '2'],
-    ['ApollonNotosfos', 'vdxhVKpc', '2']
+users = [['YaredSurendra', b"E6khLjYn", '0'],
+    ['MelleBamidele', b"eukvx9QB", '0'],
+    ['NairyosHeroides', b"uyvXENvV", '0'],
+    ['AjayYiftachang', b"v2NdeP3V", '0'],
+    ['FlaviusAlaattin', b"dd3JBAqs", '0'],
+    ['YaredAvrumlos', b"Fh7kZLEy", '1'],
+    ['DubhghallAtalyah', b"5Zh4FdeR", '1'],
+    ['NoriKenzolosa', b"7jfMgUcx", '1'],
+    ['SaburouTakumi', b"h3wZd9SR", '1'],
+    ['YoshirouTooru', b"rVkfk8gA", '1'],
+    ['ChrysesKastor', b"kNrCvWh6", '2'],
+    ['HyakinthosErebos', b"bbNM5pkQ", '2'],
+    ['ErosIapetoslos', b"mb4X2dkd", '2'],
+    ['MenelaosDaidalos', b"zYe625Sc", '2'],
+    ['ApollonNotosfos', b"vdxhVKpc", '2']
 ]
 
-"""
-for row in unclassifiedUsers:
-    print("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-    # f.write("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-
-print("\n")
-
-for row in classifiedUsers:
-    print("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-    # f.write("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-
-print("\n")
-
-for row in topSecretUsers:
-    print("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-    # f.write("Names: " + str(row[0]) + "\t\t" + "Pass: " + str(row[1]) + "\t\t" + "Priority: " + str(row[2]))
-
-with open('unclassified.txt', 'w') as f:
-    pass
-with open('classified.txt', 'w') as f:
-    pass
-with open('topsecret.txt', 'w') as f:
-    pass
-"""
-
-AllUsers = [
-    ['YaredSurendra', 'E6khLjYn', '0'],
-    ['MelleBamidele', 'eukvx9QB', '0'],
-    ['NairyosHeroides', 'uyvXENvV', '0'],
-    ['AjayYiftachang', 'v2NdeP3V', '0'],
-    ['FlaviusAlaattin', 'dd3JBAqs', '0'],
-    ['YaredAvrumlos', 'Fh7kZLEy', '1'],
-    ['DubhghallAtalyah', '5Zh4FdeR', '1'],
-    ['NoriKenzolosa', '7jfMgUcx', '1'],
-    ['SaburouTakumi', 'h3wZd9SR', '1'],
-    ['YoshirouTooru', 'rVkfk8gA', '1'],
-    ['ChrysesKastor', 'kNrCvWh6', '2'],
-    ['HyakinthosErebos', 'bbNM5pkQ', '2'],
-    ['ErosIapetoslos', 'mb4X2dkd', '2'],
-    ['MenelaosDaidalos', 'zYe625Sc', '2'],
-    ['ApollonNotosfos', 'vdxhVKpc', '2']
-]
+users_hashed_salted = []
+for row in users:
+    form = []
+    hashed = bcrypt.hashpw(row[1], bcrypt.gensalt())
+    form = [row[0], hashed, row[2]]
+    users_hashed_salted.append(form)
 
 
 class Class:
@@ -97,6 +44,48 @@ def compartment_level(arg):
     return compartments.get(int(arg))
 
 
+def files(subject_level, setting):
+    # ['classified.txt', 'topsecret.txt', 'unclassified.txt']
+    entries_read = os.listdir('files/')
+    entries_write = os.listdir('files/')
+    entries = os.listdir('files/')
+    file_permission = {
+        0: entries[2],
+        1: entries[0],
+        2: entries[1],
+    }
+    if int(setting) == 0:
+        if int(subject_level) == 0:
+            entries_read.remove(file_permission[1])
+            entries_read.remove(file_permission[2])
+        if int(subject_level) == 1:
+            entries_read.remove(file_permission[2])
+            entries_write.remove(file_permission[0])
+        if int(subject_level) == 2:
+            entries_write.remove(file_permission[0])
+            entries_write.remove(file_permission[1])
+    if int(setting) == 1:
+        if int(subject_level) == 0:
+            entries_write.remove(file_permission[1])
+            entries_write.remove(file_permission[2])
+        if int(subject_level) == 1:
+            entries_read.remove(file_permission[0])
+            entries_write.remove(file_permission[2])
+        if int(subject_level) == 2:
+            entries_read.remove(file_permission[0])
+            entries_read.remove(file_permission[1])
+    file_array = [entries, entries_read, entries_write]
+    return file_array
+
+
+def blp(lvl):
+    return files(lvl, 0)
+
+
+def biba(lvl):
+    return files(lvl, 1)
+
+
 def main():
     while True:
         print("Username: ", end='')
@@ -108,8 +97,8 @@ def main():
             continue
 
         try:
-            tempUsernameValidation = [userN for userN in AllUsers if username == str(userN[0]) in userN]
-            tempPasswordValidation = [passW for passW in AllUsers if password == str(passW[1]) in passW]
+            tempUsernameValidation = [userN for userN in users if username == str(userN[0]) in userN]
+            tempPasswordValidation = [passW for passW in users if password == str(passW[1]) in passW]
             if str(tempPasswordValidation) == str(tempUsernameValidation) \
                     and tempPasswordValidation[0][2] == tempUsernameValidation[0][2]:
                 level = tempUsernameValidation[0][2]
@@ -120,6 +109,22 @@ def main():
     clearance = compartment_level(level)
     print("Currently signed in as: " + session_user.username +
           "\nClearance Level: " + str(clearance) + " (" + str(level) + ")")
+    print("Model Choice: \tBLP Model - 1 \tBiba's Model - 2")
+    choice = input()
+    if not re.match("^[1-2]*$", choice):
+        print("Error! Only numbers 1 or 2 allowed!")
+        sys.exit()
+    elif len(choice) != 1:
+        print("Error! One character expected")
+        sys.exit()
+    if int(choice) == 1:
+        file_array = blp(level)
+        print("Files available for read:\t" + str(file_array[1]))
+        print("Files available for write:\t" + str(file_array[2]))
+    if int(choice) == 2:
+        file_array = biba(level)
+        print("Files available for read:\t" + str(file_array[1]))
+        print("Files available for write:\t" + str(file_array[2]))
 
 
 main()
