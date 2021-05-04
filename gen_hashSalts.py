@@ -3,29 +3,42 @@ import re
 import sys
 import bcrypt
 
-users = [['YaredSurendra', b"E6khLjYn", '0'],
-    ['MelleBamidele', b"eukvx9QB", '0'],
-    ['NairyosHeroides', b"uyvXENvV", '0'],
-    ['AjayYiftachang', b"v2NdeP3V", '0'],
-    ['FlaviusAlaattin', b"dd3JBAqs", '0'],
-    ['YaredAvrumlos', b"Fh7kZLEy", '1'],
-    ['DubhghallAtalyah', b"5Zh4FdeR", '1'],
-    ['NoriKenzolosa', b"7jfMgUcx", '1'],
-    ['SaburouTakumi', b"h3wZd9SR", '1'],
-    ['YoshirouTooru', b"rVkfk8gA", '1'],
-    ['ChrysesKastor', b"kNrCvWh6", '2'],
-    ['HyakinthosErebos', b"bbNM5pkQ", '2'],
-    ['ErosIapetoslos', b"mb4X2dkd", '2'],
-    ['MenelaosDaidalos', b"zYe625Sc", '2'],
-    ['ApollonNotosfos', b"vdxhVKpc", '2']
-]
+
+def index_2d(data, search):
+    for i, e in enumerate(data):
+        try:
+            return i, e.index(search)
+        except ValueError:
+            pass
+    raise ValueError("{} is not in list".format(repr(search)))
+
+
+users = [["YaredSurendra", b"E6khLjYn", '0'],
+         ["MelleBamidele", b"eukvx9QB", '0'],
+         ["NairyosHeroides", b"uyvXENvV", '0'],
+         ["AjayYiftachang", b"v2NdeP3V", '0'],
+         ["FlaviusAlaattin", b"dd3JBAqs", '0'],
+         ["YaredAvrumlos", b"Fh7kZLEy", '1'],
+         ["DubhghallAtalyah", b"5Zh4FdeR", '1'],
+         ["NoriKenzolosa", b"7jfMgUcx", '1'],
+         ["SaburouTakumi", b"h3wZd9SR", '1'],
+         ["YoshirouTooru", b"rVkfk8gA", '1'],
+         ["ChrysesKastor", b"kNrCvWh6", '2'],
+         ["HyakinthosErebos", b"bbNM5pkQ", '2'],
+         ["ErosIapetoslos", b"mb4X2dkd", '2'],
+         ["MenelaosDaidalos", b"zYe625Sc", '2'],
+         ["ApollonNotosfos", b"vdxhVKpc", '2']
+         ]
 
 users_hashed_salted = []
 for row in users:
     form = []
     hashed = bcrypt.hashpw(row[1], bcrypt.gensalt())
     form = [row[0], hashed, row[2]]
+    print("In Form: \t", end='')
+    print(form)
     users_hashed_salted.append(form)
+    print(users_hashed_salted)
 
 
 class Class:
@@ -95,17 +108,16 @@ def main():
         if len(username) > 20 or len(password) > 20:
             print("Error! 20 Character username or password maximum reached!")
             continue
-
-        try:
-            tempUsernameValidation = [userN for userN in users if username == str(userN[0]) in userN]
-            tempPasswordValidation = [passW for passW in users if password == str(passW[1]) in passW]
-            if str(tempPasswordValidation) == str(tempUsernameValidation) \
-                    and tempPasswordValidation[0][2] == tempUsernameValidation[0][2]:
-                level = tempUsernameValidation[0][2]
+        username_validation = [userN for userN in users if str(username) == str(userN[0]) in userN]
+        position = index_2d(users, username)
+        if users[position[0]][0] == username:
+            position = index_2d(users_hashed_salted, username)
+            if bcrypt.checkpw(password.encode('utf8'), users_hashed_salted[position[0]][1]):
+                level = username_validation[0][2]
                 session_user = Class(username, password, level)
                 break
-        except IndexError:
-            print("Wrong Password")
+            else:
+                print("Wrong Password")
     clearance = compartment_level(level)
     print("Currently signed in as: " + session_user.username +
           "\nClearance Level: " + str(clearance) + " (" + str(level) + ")")
