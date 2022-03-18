@@ -9,6 +9,15 @@ My program starts by requiring a username and password to be authenticated to re
 - Python, C (Initial Implementation)
 - External Packages: N/A
 
+## Program Flow
+Starts by requiring a username and password for authentication. (i.e U: SaburouTakumi P: h3wZd9SR)
+Requirements through main such as: Character Limit, Key limit
+Username is validated through comparing the username given in stdin with name in 'database'
+Func index_2d is utilized to get the position of an name:pass:level group. Objective, User, is created
+The instructions were vague with introducing a BLP or Biba model so I give the 'Users' options of what model to follow
+
+Given a 'Users' level, the 'User' is prompted with what files (stored locally) are available to read and write
+
 
 ## Original Prompt:
 Build simple shell with operations for text files
