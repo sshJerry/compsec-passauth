@@ -5,6 +5,6 @@ I initially started making the program in C as it coincided with what I was lear
 
 My program starts by requiring a username and password to be authenticated to read and write files. I made a 2 dimensional array of username:password:clearance_level with the number being denoted as a numerical value to allow for BLP and Biba model functionality. Regarding the BLP and Biba model, it wasn’t specified whether or not to leave that to the user. In terms of class concepts, the MLS, BLP and Biba model mentioned above as well as hashing and salting. There wasn’t anything unique about design decisions made for this program although I wanted to do a lot more than I did. The program is fully functional and with little modification, could scale with more users and passwords. In terms of optimization, the program is rather wasteful in resources and I acknowledge that could have definitely been improved.
 
-> Technologies Used
+> Technologies Used: 
 - Python, C (Initial Implementation)
 - External Packages: N/A
