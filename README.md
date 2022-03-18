@@ -8,3 +8,15 @@ My program starts by requiring a username and password to be authenticated to re
 > Technologies Used: 
 - Python, C (Initial Implementation)
 - External Packages: N/A
+
+
+## Original Prompt:
+Password authentication and MLS compartments
+Build simple shell with operations for text files
+CreateUser level, level-compartment
+Login – specify username password
+Read <inputfile> output contents to screen
+Write <filename> text to be written to file
+SetPermissions level(required) compartment(s)(optional)
+Basically what you need to implement is a file that has entries of user names, hashed passwords with salts and authentication level (UNCLASSIFIED,CLASSIFIED,TOPSECRET) with a couple of compartments (ie. TOPSECRET{CS492}, CLASSIFIED{CS492,CS1}).  When the user tries to login implement basic authentication using a salt.  (You don’t need to implement the hash algorithm you can use a prebuilt one such as the one in java.security.)  After the user logs in the user’s privileges (what they are allowed to do) correspond with their authentication level.  When you login you should be able to specify BLP or Biba which will be enforced.  
+For your demo you should be able to create a user with access to different levels of different compartments and demonstrate BLP and Biba applied to your model
