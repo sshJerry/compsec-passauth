@@ -1,5 +1,5 @@
 import curses
-# import urwid
+#import urwid
 import time
 
 menu = ['Login', 'Unclassified', 'Exit']
